@@ -18,7 +18,8 @@ var (
 )
 
 type JWKClientOptions struct {
-	URI string
+	URI            string
+	TokenExtractor RequestTokenExtractor
 }
 
 type JWKS struct {
@@ -93,7 +94,11 @@ func (j *JWKClient) downloadKeys() ([]jose.JSONWebKey, error) {
 }
 
 func (j *JWKClient) GetSecret(req *http.Request) (interface{}, error) {
-	t, err := FromHeader(req)
+	extractor := j.options.TokenExtractor
+	if extractor == nil {
+		extractor = RequestTokenExtractorFunc(FromHeader)
+	}
+	t, err := extractor.Extract(req)
 
 	if err != nil {
 		return nil, err

@@ -66,6 +66,12 @@ func NewValidator(config Configuration) *JWTValidator {
 	return &JWTValidator{config, RequestTokenExtractorFunc(FromHeader)}
 }
 
+// NewValidator creates a new
+// validator with the provided configuration.
+func NewValidatorCustomExtractor(config Configuration, extractor RequestTokenExtractor) *JWTValidator {
+	return &JWTValidator{config, extractor}
+}
+
 // ValidateRequest validates the token within
 // the http request.
 func (v *JWTValidator) ValidateRequest(r *http.Request) (*jwt.JSONWebToken, error) {
